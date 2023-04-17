@@ -1,0 +1,39 @@
+﻿version: '3.8'
+services:
+  postgres-db:
+    container_name: 'postgres-db'
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: PassW0rd
+      POSTGRES_DB: demo-database
+    ports:
+      - "5432:5432"
+    volumes:
+      - demo-data:/var/lib/postgresql/data
+    networks:
+      - nestjs-network
+  demo-base-boilerplate-api:
+    container_name: 'demo-base-boilerplate-api'
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    networks:
+      - nestjs-network
+    depends_on:
+      - postgres-db
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    command: yarn start:dev
+    volumes:
+      - .:/usr/src/app
+      #- nodemodules:/src/app/node_modules
+networks:
+  nestjs-network:
+    driver: bridge
+volumes:
+  demo-data:
+  #nodemodules:
